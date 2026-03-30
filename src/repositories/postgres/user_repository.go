@@ -35,3 +35,27 @@ func (r *UserRepository) Save(user *models.User) error {
 		user.UpdatedAt,
 	).Scan(&user.ID)
 }
+
+func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
+	query := `
+		SELECT id, username, password, created_at, updated_at
+		FROM users
+		WHERE username = $1
+	`
+
+	var user models.User
+
+	err := r.db.QueryRow(query, username).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

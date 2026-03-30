@@ -52,12 +52,16 @@ func main() {
 	userRepo := postgres.NewUserRepository(db)
 	createUserUseCase := usecases.NewCreateUserUseCase(userRepo)
 	createUserHandler := controllers.NewCreateUserHandler(createUserUseCase)
+	loginUseCase := usecases.NewLoginUserUseCase(userRepo)
+	loginHandler := controllers.NewLoginUserHandler(loginUseCase)
 
 	r := gin.Default()
 
 	api := r.Group("/api")
+
 	routes.InitHealthRoutes(api)
 	routes.InitUserRoutes(api, createUserHandler.CreateUser)
+	routes.InitAuthRoutes(api, loginHandler.Login)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

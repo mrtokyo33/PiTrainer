@@ -3,6 +3,7 @@ package usecases
 import (
 	"github.com/mrtokyo33/PiTrainer/src/models"
 	"github.com/mrtokyo33/PiTrainer/src/repositories"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CreateUserUseCase struct {
@@ -16,7 +17,12 @@ func NewCreateUserUseCase(userRepo repositories.IUserRepository) *CreateUserUseC
 }
 
 func (u *CreateUserUseCase) Execute(username, password string) error {
-	user, err := models.NewUser(username, password)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user, err := models.NewUser(username, string(hashedPassword))
 	if err != nil {
 		return err
 	}
