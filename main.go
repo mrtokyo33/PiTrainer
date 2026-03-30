@@ -50,10 +50,15 @@ func main() {
 	log.Println("Migrations applied")
 
 	userRepo := postgres.NewUserRepository(db)
+
 	createUserUseCase := usecases.NewCreateUserUseCase(userRepo)
 	createUserHandler := controllers.NewCreateUserHandler(createUserUseCase)
+
 	loginUseCase := usecases.NewLoginUserUseCase(userRepo)
 	loginHandler := controllers.NewLoginUserHandler(loginUseCase)
+
+	getMeUseCase := usecases.NewGetMeUseCase(userRepo)
+	meHandler := controllers.NewMeHandler(getMeUseCase)
 
 	r := gin.Default()
 
@@ -62,6 +67,7 @@ func main() {
 	routes.InitHealthRoutes(api)
 	routes.InitUserRoutes(api, createUserHandler.CreateUser)
 	routes.InitAuthRoutes(api, loginHandler.Login)
+	routes.InitMeRoutes(api, meHandler.GetMe)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)

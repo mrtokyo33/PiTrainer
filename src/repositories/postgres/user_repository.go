@@ -59,3 +59,26 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 
 	return &user, nil
 }
+
+func (r *UserRepository) FindByID(id uint) (*models.User, error) {
+	query := `
+		SELECT id, username, created_at, updated_at
+		FROM users
+		WHERE id = $1
+	`
+
+	var user models.User
+
+	err := r.db.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.Username,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
